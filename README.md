@@ -1,54 +1,131 @@
-# React + TypeScript + Vite
+# WORKFLOW AUTOMATION BUILDER
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación de editor visual de flujos de trabajo construida como parte de una prueba técnica. Permite a los usuarios diseñar procesos de automatización mediante una interfaz drag & drop, conectando diferentes tipos de nodos para crear flujos lógicos.
 
-Currently, two official plugins are available:
+La aplicación permite crear, conectar y configurar diferentes tipos de nodos (inicio, email, espera, condición), establecer relaciones entre ellos y exportar el flujo completo en formato JSON para su potencial integración con sistemas de automatización.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Stack Tecnológico
 
-## Expanding the ESLint configuration
+- React 19 / React Flow (@xyflow/react)
+- TypeScript
+- TailwindCSS
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Funcionalidades Implementadas
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Nodos
+
+- **Start**: Nodo de inicio del flujo
+- **Email**: Para envío de emails con título y contenido configurable
+- **Wait**: Permite establecer una espera (en horas) para realizar una acción
+- **Condition**: Bifurcaciones condicionales con resultados true/false
+- **Result** (True/False): Nodos de finalización para diferentes resultados
+
+### Interacciones
+
+- **Drag & Drop**: Añadir nodos arrastrándolos desde la Toolbar
+- **Conexiones dinámicas**: Entre puntos de entrada/salida (handles) de los nodos
+- **Edición Inline**: Configurar propiedades en los nodos Email, Wait y Condition
+- **Eliminación inteligente**: Al eliminar un nodo Condition se eliminan también sus nodos de resultado asociados
+- **Exportación a JSON**: Mediante botón dedicado, con formato específico para automatizaciones (al dar clic en `export` también se visualiza la información en consola).
+- **Opción de guardado en localStorage**: Permite guardar el flujo en el localStorage del usuario por lo que la información persiste entre renderizados.
+
+### Estructura del Proyecto
+
+La aplicación sigue una arquitectura por features, incorporando principios de la arquitectura SCREAM:
+
+```bash
+src/
+├── constants/           # Constantes globales
+│   └── editorConstants.ts
+├── features/
+│   ├── editor/          # Feature de edición de flujos
+│   │   ├── components/  # Componentes de UI
+│   │   │   ├── buttons/ # Botones reutilizables
+│   │   │   │   ├── ExportButton.tsx
+│   │   │   │   ├── SaveButton.tsx
+│   │   │   │   └── DeleteNodeButton.tsx
+│   │   │   ├── FlowEditor.tsx
+│   │   │   └── Toolbar.tsx
+│   │   ├── hooks/      # Custom hooks
+│   │   │   ├── useDnD.tsx
+│   │   │   ├── useDragDrop.tsx
+│   │   │   ├── useFlowOperations.tsx
+│   │   │   ├── useLocalStorage.tsx
+│   │   │   └── useNodeDeletion.tsx
+│   │   └── providers/  # Contextos y proveedores
+│   │       └── DnDProvider.tsx
+│   └── nodes/          # Componentes de nodos
+│       ├── ConditionNode.tsx
+│       ├── EmailNode.tsx
+│       ├── ResultNode.tsx
+│       ├── StartNode.tsx
+│       └── WaitNode.tsx
+├── types/              # Tipos e interfaces
+│   ├── editorTypes.ts
+│   └── nodeTypes.ts
+├── utils/              # Utilidades
+│   └── exportUtils.ts
+├── App.tsx             # Componente raíz
+└── main.tsx            # Punto de entrada
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Requisitos previos
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Node.js v18+
+- npm o yarn
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Pasos
+
+1. Clona el repositorio o descomprime el archivo ZIP
+
+```bash
+git clone https://github.com/melodiaz23/workflow-automation-builder.git
 ```
+
+2. Navega al directorio del proyecto
+
+```bash
+cd workflow-automation-builder
+```
+
+3. Instala las dependencias
+
+```bash
+npm install
+# o
+yarn install
+```
+
+4. Inicia el servidor de desarrollo
+
+```bash
+npm run dev
+# o
+yarn dev
+```
+
+5. Abre [http://localhost:5173](http://localhost:5173) en tu navegador.
+
+## Cómo Usar
+
+La aplicación tiene un vista inicial para efectos de que se visualice de forma previa cómo podrían verse los nodos. Puedes eliminarlos y adicionar nuevos según la necesidad.
+
+1. **Añadir nodos**: Arrastra componentes desde la barra de herramientas inferior al lienzo, o haz clic sobre ellos para añadirlos al centro.
+2. **Conectar nodos**: Haz clic en un punto de conexión (handle) de un nodo y arrastra hasta el handle de otro nodo para crear una conexión.
+3. **Configurar nodos**:
+   - **Email**: Edita el título y contenido del email
+   - **Wait**: Establece la duración en horas
+   - **Condition**: Define la condición lógica para bifurcar el flujo
+4. **Eliminar nodos**: Utiliza el botón X en cada nodo (en el caso de "condition" eliminará también conexiones relacionadas).
+5. **Guardar**: Opción de guardado del flujo de trabajo.
+6. **Exportar**: Haz clic en el botón "Export" en la esquina superior derecha para descargar el flujo como archivo JSON.
+
+## Tiempo Estimado Invertido
+
+- Desarrollo del core y componentes base: 8 horas
+- Implementación de interacciones avanzadas: 5 horas
+- Estilizado y mejoras de UI: 3 horas
+- Solución de bugs y testing: 3 horas
+- **Total aproximado**: 19 horas
+
+Desarrollado como parte de una prueba técnica por: **Melissa Díaz**.
