@@ -1,5 +1,5 @@
 import './App.css'
-import FlowEditor from './features/editor/FlowEditor'
+import FlowEditor from './features/editor/components/FlowEditor'
 
 function App() {
   return (
@@ -8,6 +8,5 @@ function App() {
     </>
   )
 }
-
 
 export default App
